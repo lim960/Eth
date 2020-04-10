@@ -1,6 +1,4 @@
-因为是先写的博客 直接复制过来了
-博客连接 https://blog.csdn.net/weixin_42704356/article/details/105377649
-
+@[TOC](JAVA使用web3j开发以太坊实战案例)
 
 #  必读
  **本文将从0开始完成一些普遍的以太坊功能开发 本文涉及内容如下：**
@@ -32,7 +30,7 @@ web3j（org.web3j）是Java版本的以太坊JSON RPC 接口协议封装实现�
 以太坊交易所之类的都是第三方的，不是官方提供的，有一定局限性(要求账号在它的平台之类)，如不介意可以直接接入，会方便很多，我当初在这浪费了不少时间，后来发现方向不对
 ## 3.web3j引入
 
-
+```javascript
 		<dependency>
             <groupId>org.web3j</groupId>
             <artifactId>core</artifactId>
@@ -50,17 +48,16 @@ web3j（org.web3j）是Java版本的以太坊JSON RPC 接口协议封装实现�
             <artifactId>core</artifactId>
             <version>1.58.0.0</version>
         </dependency>
-
+```
 
 [BIP32-0.0.9jar包下载连接](https://mvnrepository.com/artifact/io.github.novacrypto/BIP32/0.0.9)
 [BIP39-0.1.9jar包下载连接](https://mvnrepository.com/artifact/io.github.novacrypto/BIP39/0.1.9)
 [BIP44-0.0.3jar包下载连接](https://mvnrepository.com/artifact/io.github.novacrypto/BIP44/0.0.3)
 [SHA256-0.0.1jar包下载连接](https://mvnrepository.com/artifact/io.github.novacrypto/SHA256/0.0.1)
 [ToRuntime-0.9.0jar包下载连接](https://mvnrepository.com/artifact/io.github.novacrypto/ToRuntime/0.9.0)
-下载完jar包放到项目里 groupId artifactId随便写 但是千万不能重复!
-[在这里插入图片描述](https://img-blog.csdnimg.cn/2020040800505477.jpg#pic_center)
+下载完jar包放到项目里 groupId artifactId随便写 但是千万不能重复![在这里插入图片描述](https://img-blog.csdnimg.cn/2020040800505477.jpg#pic_center)
 
-
+```javascript
 <!-- fastdfs所需jar包依赖[注：这里是在本地lib中引入，maven中央仓库中暂无此jar包]，要与<includeSystemScope>true</includeSystemScope>配合使用-->
         <dependency>
             <groupId>io.github.novacrypto4</groupId>
@@ -97,8 +94,9 @@ web3j（org.web3j）是Java版本的以太坊JSON RPC 接口协议封装实现�
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/lib/ToRuntime-0.9.0.jar</systemPath>
         </dependency>
+```
 
-
+```javascript
  	<plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
@@ -107,7 +105,7 @@ web3j（org.web3j）是Java版本的以太坊JSON RPC 接口协议封装实现�
             <includeSystemScope>true</includeSystemScope>
         </configuration>
     </plugin>
-
+```
 
 
 ## 4.创建账户（离线创建）
@@ -115,7 +113,7 @@ web3j（org.web3j）是Java版本的以太坊JSON RPC 接口协议封装实现�
 废话少说直接上代码 没什么难点 注释部分是生成keystore文件的 需要就放出来 filepath 生成文件路径
 address就是账户地址 privateKey是私钥 后面基本就用这两个 privateKey一定保存好 用它可以直接免密码操作账户 重置密码等操作
 
-
+```javascript
 public JSONObject createAccount(String pwd) {
 
 //        String filePath = "/lim";
@@ -142,15 +140,14 @@ public JSONObject createAccount(String pwd) {
         json.put("address", address);
         return json;
     }
-
+```
 
 ## 5.geth节点搭建、基本使用及一般问题
 
 **1.节点搭建及基本使用**
 后面的操作需要连接节点操作 所以这里先来搭建一个节点
 这里使用docker容器 我直接连了主网 没有搭私链
-
-
+```javascript
 首先时间2020.4.8 fast方式同步区块数据230G 数据会越来越大 先保证服务器磁盘空间足够 比区块数据多个200G比较好 空间小会降低同步效率 空间不够就无法成功
 1 拉取镜像
 docker pull ethereum/client-go
@@ -194,10 +191,10 @@ docker logs -f --tail=50 ethereum 只打印最后50行日志，因为日志多�
 # sudo cp src/cpulimit /usr/bin
 //限制geth使用cpu 40%
 nohup cpulimit -e geth -l 40 &   
-
+```
 **2. 常见问题**
 
-
+```javascript
 
 1.刚启动节点eth.syncing看同步情况返回false
 首先看一下日志有没有报错，上面有看日志的命令，正常的话说明还没有开始同步，五分钟之后再看一下
@@ -214,12 +211,13 @@ highestBlock是总块高 当currentBlock = highestBlock 的时候eth.syncing会�
 5.区块已经同步完成了，过了几天，发现eth.blockNumber比区块链浏览器上的低几百甚至上千，以至于监听不到数据（先提一下，后面会讲监听）
 geth是会有卡住的情况，影响不大，只要逻辑上处理妥善不会有数据丢失，docker kill docker restart重启一下
 
+```
 **3.同步模式拓展**
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200408215507939.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjcwNDM1Ng==,size_16,color_FFFFFF,t_70#pic_center)
 ##  6.常量类 后面内容都要用到（必备！！！！！！）
 
-
+```javascript
 public class EthConstant {
 
     //redis key 存储用户的账户地址集
@@ -250,11 +248,11 @@ public class EthConstant {
     public static final String OUT_KEY = "your private key";
     
 }
-
+```
 
 **简单说下gas price 和gas limit
 首先回顾一下单位**
-
+```javascript
 
 	WEI("wei", 0),
     KWEI("kwei", 3),
@@ -267,7 +265,7 @@ public class EthConstant {
     METHER("mether", 24),
     GETHER("gether", 27);
     
-
+```
 ***wei = e0 = 1 
 kwei = e3 = 1000***
 
@@ -279,7 +277,7 @@ gas limit 是gas price的基础上 你最多愿意出多少份，也就是说gas
 ##  7.查询以太币余额
 废话少说直接上代码 这里很简单
 
-
+```javascript
 	public BigInteger getBalance(String address) {
 		Web3j web3 = Web3j.build(new HttpService(EthConstant.SERVER));
         BigInteger banlance = new BigInteger("0");
@@ -294,11 +292,11 @@ gas limit 是gas price的基础上 你最多愿意出多少份，也就是说gas
         return banlance;
     }
     
-
+```
 ## 8.以太币交易
 也很简单，直接上代码
 
-
+```javascript
 	public String ethTran(String from,String to, BigInteger num) throws Exception {
 	
 		Web3j web3 = Web3j.build(new HttpService(EthConstant.SERVER));
@@ -326,7 +324,7 @@ gas limit 是gas price的基础上 你最多愿意出多少份，也就是说gas
             return transactionHash;
         }
     }
-
+```
 
 ## 9.智能合约编译java文件
 首先下载web3j命令行工具
@@ -345,10 +343,10 @@ gas limit 是gas price的基础上 你最多愿意出多少份，也就是说gas
 然后当前目录cmd打开命令行
 
 
-
+```javascript
 web3j solidity generate EthContract.bin EthContract.abi -o java -p com.tes.eth
 //-o生成的java文件存放目录 -p设置文件所在的包
-
+```
 下面附上我编译好的java文件及bin，abi，合约源码
 [下载连接](https://github.com/lim960/Eth/tree/master/ERC20_USDT%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6)
 然后把java文件添加到项目中 就可以使用合约方法直接操作代币了
@@ -360,7 +358,7 @@ web3j solidity generate EthContract.bin EthContract.abi -o java -p com.tes.eth
 所以这里查询操作之前创建Credentials 证书时可以使用任何账户的私钥来创建
 2.USDT和Ether的小数点位不同，ether是18位，USDT是6位，链上的数据的单位都是wei，也就是说，如果要转成个数，ether是要除以e18的，而usdt是除以e6，所以
 Convert.fromWei(banlance.toString(), Convert.Unit.MWEI) 这里单位要特别注意 MWEI**
-
+```javascript
 	public BigInteger getUsdtBalance(String address) {
 
 		Web3j web3 = Web3j.build(new HttpService(EthConstant.SERVER));
@@ -377,11 +375,11 @@ Convert.fromWei(banlance.toString(), Convert.Unit.MWEI) 这里单位要特别注
         //BigDecimal ether = Convert.fromWei(banlance.toString(), Convert.Unit.MWEI);
         return banlance;
     }
-
+```
 
 ## 11.代币交易
 **同样这里注意单位 MWEI GWEI WEI**
-
+```javascript
 	public JSONObject TranUsdt(String from, String to, String num) throws Exception{
 
         Web3j web3 = Web3j.build(new HttpService(EthConstant.SERVER));
@@ -393,7 +391,7 @@ Convert.fromWei(banlance.toString(), Convert.Unit.MWEI) 这里单位要特别注
         //result 中有交易hash，块高，gas使用数等数据 去TransactionReceipt类中看 
         return null;
     }
-
+```
 
 ## 12.交易监听
 **先讲一下使用场景和常见问题解答
@@ -407,7 +405,7 @@ Convert.fromWei(banlance.toString(), Convert.Unit.MWEI) 这里单位要特别注
 **下面开始上代码**
 先建一个注册类
 **这里只有一个注意点 fromblock 从redis中拿 拿不到就取最新的 不用redis根据自己情况改**
-
+```javascript
 @Configuration
 public class ContractConfig {
 
@@ -461,10 +459,10 @@ public class ContractConfig {
     }
 
 }
-
+```
 再建一个监听的类
 
-
+```javascript
 
 /**
  * 服务监听器，继承ApplicationRunner，在spring启动时启动
@@ -529,10 +527,10 @@ public class ServiceRunner implements ApplicationRunner {
         });
     }
 }
-
+```
 **下面大概分享一下我的做法
 1.创建账户的时候把地址放进redis**
-
+```javascript
 		//先说一下存储形式
 		//value格式
 		//	{
@@ -551,12 +549,12 @@ public class ServiceRunner implements ApplicationRunner {
         }
         addJson.put(address,1);
         redisService.setString(EthConstant.USER_ETH_ADDRESS_JSON_KEY, JSON.toJSONString(addJson));
-
+```
 **2.刚才监听处处理 
 直接复制到 //写自己的逻辑 判断to账户是不是自己平台的账号 是的话加余额 加交易记录 加上链记录 
 这里**
 
-
+```javascript
 		String add = redisService.getString(EthConstant.USER_ETH_ADDRESS_JSON_KEY);
         if(add != null){
             JSONObject addJson = JSONObject.parseObject(add);
@@ -564,7 +562,7 @@ public class ServiceRunner implements ApplicationRunner {
             	//说明是需要处理的数据 进行处理
             }
         }
-
+```
 ## 13.代币的代理交易
 **NO1:讲一下使用场景**
 a要转账给b 10个usdt，而a没有ether，无法支付燃料，所以一般需要先给a充值才可以进行操作，但是这样要支付两次手续费，所以用代理交易的方式便可以解决这个问题。
@@ -579,7 +577,7 @@ allowance  两个参数_owner ，_spender    查询剩余的_owner  授权给_sp
 **1.下面上代码 这里出账账户就是c(支付手续费的账户)
 2.注意单位   WEI  MWEI  GWEI  FINNEY  ETHER**
 
-
+```javascript
 	public String proxyTranUsdt(String from, String to, String num) throws Exception {
 
         BigInteger tranNum = Convert.toWei(num,Convert.Unit.MWEI).toBigInteger();//交易数量转成biginteger
@@ -644,7 +642,7 @@ allowance  两个参数_owner ，_spender    查询剩余的_owner  授权给_sp
       	//ethRecord = new EthRecordEntity();......
         return null;
     }
-
+```
 ## 14.大概说一下sendAsync()和send()及使用send()时的处理方法
 字面意思 一个同步一个异步
 同步就是要等待处理完才继续执行，如先approve再进行transferFrom，如果使用异步就可能出问题，还没授权成功就进行交易，这样首先不会成功，而且gas price * gas limit会被全吞，本文使用的全都是send()，这样会带来一个问题，接口等待时间太长，响应无效了，处理方式如下
@@ -656,7 +654,7 @@ allowance  两个参数_owner ，_spender    查询剩余的_owner  授权给_sp
 
 ## 15.分享一下我的上链记录class
 
-
+```javascript
 @Data
 public class EthRecordEntity implements Serializable {
 
@@ -700,4 +698,4 @@ public class EthRecordEntity implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
-
+```
