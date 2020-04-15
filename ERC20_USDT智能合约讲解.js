@@ -404,4 +404,4 @@ contract TetherToken is Pausable, StandardToken, BlackList {
 }
 附上一个我写的标准ERC20代币智能合约 (砍掉了白名单和版本更新模块)
 
-标准ERC20代币智能合约连接    ←←← 
+https://github.com/lim960/Eth/blob/master/%E6%A0%87%E5%87%86ERC20%E4%BB%A3%E5%B8%81%E5%90%88%E7%BA%A6.js    ←←← 
