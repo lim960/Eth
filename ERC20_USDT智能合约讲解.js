@@ -37,7 +37,7 @@ library SafeMath {
         return c;
     }
 }
- 
+
 //定义一个Ownable合约
 contract Ownable {
  
