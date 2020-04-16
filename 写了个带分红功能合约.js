@@ -84,7 +84,7 @@ contract PZSHToken is Ownable, ERC20 {
     uint public maximumFee = 0;
     uint public constant MAX_UINT = 2**256 - 1;
     
-    mapping(address => uint) public balances;
+    mapping (address => uint) public balances;
     mapping (address => mapping (address => uint)) public allowed;
    
     event Issue(uint amount);
@@ -96,6 +96,7 @@ contract PZSHToken is Ownable, ERC20 {
         symbol = _name;
         decimals = 6;
         balances[owner] = _totalSupply;
+        holders.push(owner);
     }
     
     //array of holder address
