@@ -42,7 +42,7 @@ contract Ownable {
     
     address public owner;
 
-    constructor() public {
+    function Ownable() public {
         owner = msg.sender;
     }
     
@@ -84,19 +84,27 @@ contract TetherToken is Ownable, ERC20 {
     uint public maximumFee = 0;
     uint public constant MAX_UINT = 2**256 - 1;
     
-    mapping(address => uint) public balances;
+    mapping (address => uint) public balances;
     mapping (address => mapping (address => uint)) public allowed;
    
     event Issue(uint amount);
     event Redeem(uint amount);
 
-    constructor(uint _initialSupply, string _name, string _symbol, uint _decimals) public {
+    function TetherToken(uint _initialSupply, string _name, string _symbol, uint _decimals) public {
         _totalSupply = _initialSupply;
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
         balances[owner] = _initialSupply;
     }
+    //自己选择 想少一点参数就这么写
+//     function TetherToken (uint _initialSupply, string _name) public {
+//         _totalSupply = _initialSupply * 10**6;
+//         name = _name;
+//         symbol = _name;
+//         decimals = 6;
+//         balances[owner] = _totalSupply;
+//     }
     
     /**
     * @dev Fix for the ERC20 short address attack.
