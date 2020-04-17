@@ -306,7 +306,7 @@ gas limit 是gas price的基础上 你最多愿意出多少份，也就是说gas
         Credentials credentials = Credentials.create(privateKey );
 
         EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(
-                from, DefaultBlockParameterName.LATEST).sendAsync().get();
+                from, DefaultBlockParameterName.LATEST).send();
 
         BigInteger nonce = ethGetTransactionCount.getTransactionCount();
 
@@ -650,9 +650,24 @@ allowance  两个参数_owner ，_spender    查询剩余的_owner  授权给_sp
 同步就是要等待处理完才继续执行，如先approve再进行transferFrom，如果使用异步就可能出问题，还没授权成功就进行交易，这样首先不会成功，而且gas price * gas limit会被全吞，本文使用的全都是send()，这样会带来一个问题，接口等待时间太长，响应无效了，处理方式如下
 调用上链操作时异步执行
 
-        Async.run(() -> 
-                proxyTranUsdt(address,address,num) 
-        );
+	// 异步执行上链
+        // 两个线程的线程池
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        //jdk1.8的实现方式
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(new Supplier<String>() {
+            @Override
+            public String get() {
+                System.out.println("task started!");
+                try {
+                     proxyTranUsdt(address,address,num) ;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return "task finished!";
+            }
+        }, executor);
+        //采用lambada的实现方式
+        future.thenAccept(e -> System.out.println(e + " ok"));
 
 ## 15.分享一下我的上链记录class
 
